@@ -1,3 +1,7 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..")))
+
 import streamlit as st
 from streamlit_folium import folium_static
 import folium
@@ -35,6 +39,7 @@ openai.api_key = OPENAI_API_KEY
 
 # CSS enjeksiyonu
 st.markdown("""
+
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
