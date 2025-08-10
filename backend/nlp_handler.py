@@ -1,25 +1,35 @@
-import re
-from typing import Dict, Any
+import os
+import openai
+from dotenv import load_dotenv
+from typing import List
 
+load_dotenv()
+OPENAI_KEY = os.getenv("OPENAI_KEY")
+if not OPENAI_KEY:
+    raise RuntimeError("OPENAI_KEY environment variable is missing.")
+openai.api_key = OPENAI_KEY
 
-def extract_intent(text: str) -> Dict[str, Any]:
-    """Basit regex tabanlı intent çıkarımı"""
-    # Bütçe çıkarımı
-    budget = re.findall(r"(\d+)\s*-\s*(\d+)\s*TL", text)
+def extract_locations(text: str) -> List[str]:
+    """
+    Kullanıcının metninden yer isimlerini GPT ile çıkarır.
+    """
+    prompt = f"""
+    Aşağıdaki metinde geçen tüm şehir, ilçe, mahalle isimlerini Türkçe olarak listele. Sadece isimleri, virgül ile ayrılmış olarak yaz:
 
-    # Süre çıkarımı
-    duration = re.search(r"(\d+)\s*gün|lük", text)
+    {text}
+    """
 
-    # Kategoriler
-    categories = []
-    if re.search(r"tarihi|müze|saray", text, re.IGNORECASE):
-        categories.append("museum")
-    if re.search(r"modern|alışveriş|avm", text, re.IGNORECASE):
-        categories.append("shopping_mall")
+    response = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role":"system", "content":"Sen bir dil işlem uzmanısın."},
+            {"role":"user", "content": prompt}
+        ],
+        temperature=0,
+        max_tokens=100
+    )
 
-    return {
-        "budget": (int(budget[0][0]), int(budget[0][1])) if budget else (3000, 5000),
-        "duration": int(duration.group(1)) if duration else 1,
-        "location": "Beşiktaş" if "Beşiktaş" in text else "İstanbul",
-        "categories": categories if categories else ["tourist_attraction"]
-    }
+    text_response = response.choices[0].message.content.strip()
+    # Virgül ve yeni satıra göre ayır
+    locations = [loc.strip() for loc in text_response.replace("\n",",").split(",") if loc.strip()]
+    return locations

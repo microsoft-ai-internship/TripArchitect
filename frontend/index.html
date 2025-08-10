@@ -1,10 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TripArchitect Pro</title>
+
+  <!-- Tipografi -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- İkonlar -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-$END$
+  <div class="app-shell">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" aria-label="Sohbet geçmişi">
+      <div class="sidebar-top">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">TA</div>
+          <div class="brand-text">
+            <div class="title">TripArchitect</div>
+            <div class="subtitle">Pro</div>
+          </div>
+        </div>
+
+        <div class="sidebar-actions">
+          <button id="theme-toggle" class="icon-btn" title="Tema değiştir" aria-label="Tema değiştir">
+            <i id="theme-icon" class="fas fa-moon"></i>
+          </button>
+          <button id="settings-btn" class="icon-btn" title="Ayarlar" aria-label="Ayarlar">
+            <i class="fas fa-cog"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="history-section">
+        <div class="history-header">
+          <h4 class="history-title">Geçmiş Rotalar</h4>
+          <button id="clear-history" class="tiny-btn" title="Temizle" aria-label="Geçmişi temizle"><i class="fas fa-trash"></i></button>
+        </div>
+
+        <div id="history-list" class="history-list" role="list"></div>
+
+        <div class="sidebar-bottom">
+          <button id="new-chat-btn" class="primary-btn" aria-label="Yeni rota başlat">
+            <i class="fas fa-plus"></i>
+            <span>Yeni Rota</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main" role="main">
+      <header class="topbar" id="topbar">
+        <div class="top-left">
+          <div class="assistant">
+            <div class="avatar">AI</div>
+            <div class="assistant-info">
+              <div class="assistant-title">TripArchitect AI Assistant</div>
+              <div class="assistant-sub">Profesyonel rota & gezi planlama</div>
+            </div>
+          </div>
+        </div>
+        <div class="top-right">
+          <div id="current-conversation-title" class="conversation-title">Yeni Rota</div>
+        </div>
+      </header>
+
+      <section id="chat-container" class="chat-container" aria-live="polite">
+        <!-- Zero-chat / welcome state loaded from JS -->
+      </section>
+
+      <div class="composer">
+        <textarea id="user-input" placeholder="Planını buraya yaz… Örn: 2 günlük İstanbul gezisi…" rows="1" aria-label="Sohbet girişi"></textarea>
+        <div class="composer-actions">
+          <button id="send-btn" class="action-send" title="Gönder" aria-label="Gönder">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
