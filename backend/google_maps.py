@@ -1,44 +1,55 @@
 import os
 import requests
 from dotenv import load_dotenv
-from schemas import POI, Location
-from typing import List
+from typing import List, Tuple
 
 load_dotenv()
+GOOGLE_MAPS_KEY = os.getenv("GOOGLE_MAPS_KEY")
+if not GOOGLE_MAPS_KEY:
+    raise RuntimeError("GOOGLE_MAPS_KEY environment variable is missing.")
 
 
-def search_places(location: str, radius: int, types: str, maxprice: int = None) -> List[POI]:
-    """Google Places API'den genel arama fonksiyonu"""
+def geocode_location(location_name: str) -> Tuple[float, float]:
+    """Yer ismini enlem-boylam olarak döner."""
+    url = "https://maps.googleapis.com/maps/api/geocode/json"
     params = {
-        "location": location,
-        "radius": radius,
-        "type": types,
-        "key": os.getenv("GOOGLE_MAPS_KEY"),
+        "address": location_name,
+        "key": GOOGLE_MAPS_KEY,
         "language": "tr"
     }
-    if maxprice:
-        params["maxprice"] = maxprice
+    res = requests.get(url, params=params)
+    res.raise_for_status()
+    data = res.json()
 
-    response = requests.get("https://maps.googleapis.com/maps/api/place/nearbysearch/json", params=params)
-    results = response.json().get("results", [])
+    if data["status"] != "OK" or not data["results"]:
+        raise ValueError(f"'{location_name}' için koordinat bulunamadı.")
 
-    return [
-        POI(
-            name=place["name"],
-            location=Location(**place["geometry"]["location"]),
-            rating=place.get("rating"),
-            types=place.get("types", [])
-        )
-        for place in results
-    ]
+    loc = data["results"][0]["geometry"]["location"]
+    return loc["lat"], loc["lng"]
 
 
-def get_place_photo(photo_reference: str, max_width=400) -> str:
-    """Place fotoğraf URL'si oluşturur"""
-    return f"https://maps.googleapis.com/maps/api/place/photo?maxwidth={max_width}&photo_reference={photo_reference}&key={os.getenv('GOOGLE_MAPS_KEY')}"
+def generate_route_url(locations: List[Tuple[float, float]]) -> str:
+    """
+    Koordinat listesinden Google Maps Directions embed URL'si üretir.
+    locations: [(lat,lng), (lat,lng), ...] -- en az 2 nokta
+    """
+    if len(locations) < 2:
+        raise ValueError("En az 2 koordinat olmalı.")
 
+    origin = locations[0]
+    destination = locations[-1]
+    waypoints = locations[1:-1]
 
-def generate_route_url(origin: Location, destination: Location, waypoints: List[Location]) -> str:
-    """Google Maps Directions embed URL oluşturur"""
-    waypoints_str = "|".join([f"{wp.lat},{wp.lng}" for wp in waypoints])
-    return f"https://www.google.com/maps/embed/v1/directions?key={os.getenv('GOOGLE_MAPS_KEY')}&origin={origin.lat},{origin.lng}&destination={destination.lat},{destination.lng}&waypoints={waypoints_str}&language=tr"
+    waypoints_str = "|".join([f"{lat},{lng}" for lat, lng in waypoints]) if waypoints else ""
+
+    url = (
+        f"https://www.google.com/maps/embed/v1/directions"
+        f"?key={GOOGLE_MAPS_KEY}"
+        f"&origin={origin[0]},{origin[1]}"
+        f"&destination={destination[0]},{destination[1]}"
+    )
+    if waypoints_str:
+        url += f"&waypoints={waypoints_str}"
+    url += "&language=tr"
+
+    return url
