@@ -2,60 +2,59 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
-from nlp_handler import extract_intent
-from google_maps import search_places, generate_route_url
-from gpt_summarizer import generate_trip_description
-from schemas import POI, TripPlanResponse
-import os
+from nlp_handler import extract_locations
+from google_maps import geocode_location, generate_route_url
 
 app = FastAPI(title="TripArchitect API")
 
-# CORS Ayarları
+# --- CORS ayarları ---
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # Gerekirse buraya sadece frontend URL'ini yaz
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
 class TripRequest(BaseModel):
     text: str
 
-
-@app.post("/plan_trip", response_model=TripPlanResponse)
+@app.post("/plan_trip")
 async def plan_trip(request: TripRequest):
     try:
-        # NLP ile intent çıkarımı
-        intent = extract_intent(request.text)
+        # 1. Metinden yer adlarını çıkar
+        loc_names = extract_locations(request.text)
+        if len(loc_names) < 2:
+            raise HTTPException(status_code=400, detail="En az iki yer adı bulunmalı.")
 
-        # Google Maps'ten veri çekme
-        location = "41.025,28.974"  # Beşiktaş koordinatları
-        hotels = search_places(location, 2000, "lodging", intent["budget"][1])
-        pois = search_places(location, 5000, "|".join(intent["categories"]))
+        # 2. Yerleri koordinatlara çevir
+        coords = []
+        for loc in loc_names:
+            try:
+                latlng = geocode_location(loc)
+                coords.append(latlng)
+            except Exception as e:
+                raise HTTPException(status_code=404, detail=f"'{loc}' koordinatı bulunamadı: {str(e)}")
 
-        # Rota URL'si oluşturma
-        route_url = generate_route_url(
-            origin=pois[0].location,
-            destination=pois[-1].location,
-            waypoints=[poi.location for poi in pois[1:-1]]
-        )
+        # 3. Google Maps URL'si oluştur
+        route_url = generate_route_url(coords)
 
-        # GPT ile açıklama oluşturma
-        description = generate_trip_description(pois, intent["budget"], intent["duration"])
+        # 4. Basit açıklama
+        description = f"Gezi rotası: {' -> '.join(loc_names)}"
 
-        return TripPlanResponse(
-            hotels=hotels[:3],
-            pois=pois[:5],
-            description=description,
-            map_url=route_url
-        )
+        # 5. JSON formatında dön (frontend uyumlu)
+        return {
+            "locations": loc_names,
+            "map_url": route_url,
+            "description": description,
+            "hotels": [],
+            "pois": []
+        }
 
+    except HTTPException:
+        raise
     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
     import uvicorn
-
     uvicorn.run(app, host="0.0.0.0", port=8000)
