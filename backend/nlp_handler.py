@@ -1,35 +1,41 @@
-import os
 import openai
-from dotenv import load_dotenv
 from typing import List
+import re
 
-load_dotenv()
-OPENAI_KEY = os.getenv("OPENAI_KEY")
-if not OPENAI_KEY:
-    raise RuntimeError("OPENAI_KEY environment variable is missing.")
-openai.api_key = OPENAI_KEY
 
 def extract_locations(text: str) -> List[str]:
     """
-    Kullanıcının metninden yer isimlerini GPT ile çıkarır.
+    Metinden lokasyonları çıkarır (GPT-3.5 ile geliştirilmiş versiyon).
+    Örnek: "Beşiktaş'tan başlayarak 2 günlük İstanbul gezisi" → ["Beşiktaş", "İstanbul"]
     """
-    prompt = f"""
-    Aşağıdaki metinde geçen tüm şehir, ilçe, mahalle isimlerini Türkçe olarak listele. Sadece isimleri, virgül ile ayrılmış olarak yaz:
+    try:
+        prompt = f"""
+        Aşağıdaki metinde geçen tüm şehir, ilçe, semt veya turistik yer adlarını Türkçe olarak listele.
+        Çıktı sadece virgülle ayrılmış isimler olsun. Örnek: 'İstanbul,Beşiktaş,Sultanahmet'
 
-    {text}
-    """
+        METİN: {text}
+        """
 
-    response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role":"system", "content":"Sen bir dil işlem uzmanısın."},
-            {"role":"user", "content": prompt}
-        ],
-        temperature=0,
-        max_tokens=100
-    )
+        response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Sen bir coğrafi lokasyon çıkarıcısısın. Sadece yer isimlerini listele."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.3,  # Daha tutarlı sonuçlar için
+            max_tokens=100
+        )
 
-    text_response = response.choices[0].message.content.strip()
-    # Virgül ve yeni satıra göre ayır
-    locations = [loc.strip() for loc in text_response.replace("\n",",").split(",") if loc.strip()]
-    return locations
+        # Çıktıyı temizleme
+        text_response = response.choices[0].message.content.strip()
+        locations = [
+            loc.strip()
+            for loc in re.split(r",|\n", text_response)
+            if loc.strip() and len(loc.strip()) > 2  # Tek harfli/kısaltmaları filtrele
+        ]
+
+        return locations[:6]  # En fazla 6 lokasyon dön
+
+    except Exception as e:
+        print(f"NLP Hatası: {e}")
+        return []  # Fallback: Boş liste dön
