@@ -18,36 +18,54 @@ app.add_middleware(
 class TripRequest(BaseModel):
     text: str
 
+
 @app.post("/plan_trip")
 async def plan_trip(request: TripRequest):
     try:
-        # 1. Metinden yer adlarını çıkar
+        # 1. Lokasyonları çıkar
         loc_names = extract_locations(request.text)
         if len(loc_names) < 2:
             raise HTTPException(status_code=400, detail="En az iki yer adı bulunmalı.")
 
-        # 2. Yerleri koordinatlara çevir
+        # 2. Koordinatları al
         coords = []
+        pois = []
         for loc in loc_names:
             try:
-                latlng = geocode_location(loc)
-                coords.append(latlng)
+                lat, lng = geocode_location(loc)
+                coords.append((lat, lng))
+                # POI bilgisi oluştur (basit versiyon)
+                pois.append({
+                    "name": loc,
+                    "description": f"{loc} hakkında bilgi",
+                    "visit_duration": "1-2 saat"
+                })
             except Exception as e:
                 raise HTTPException(status_code=404, detail=f"'{loc}' koordinatı bulunamadı: {str(e)}")
 
-        # 3. Google Maps URL'si oluştur
+        # 3. GPT ile detaylı plan oluştur
+        plan_text = f"""
+        **2 Günlük Gezi Planı: {' → '.join(loc_names)}
+
+        **1. Gün: {loc_names[0]}**
+        - Sabah: {loc_names[0]} turu
+        - Öğle: Yöresel lezzetler için mekan önerisi
+        - Akşam: {loc_names[1]}'de gün batımı
+
+        **2. Gün: {loc_names[1]}**
+        - Tarihi mekanlar ve kafe önerileri
+        """
+
+        # 4. Harita URL'si
         route_url = generate_route_url(coords)
 
-        # 4. Basit açıklama
-        description = f"Gezi rotası: {' -> '.join(loc_names)}"
-
-        # 5. JSON formatında dön (frontend uyumlu)
+        # 5. Frontend'in beklediği formatta dön
         return {
-            "locations": loc_names,
+            "plan": plan_text,  # Frontend'in kullandığı ana alan
             "map_url": route_url,
-            "description": description,
-            "hotels": [],
-            "pois": []
+            "pois": pois,
+            "locations": loc_names,  # Eski uyumluluk için
+            "description": plan_text.split('\n')[0].strip()  # Eski alan
         }
 
     except HTTPException:
