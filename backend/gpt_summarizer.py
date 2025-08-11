@@ -12,15 +12,30 @@ if not OPENAI_KEY:
 
 openai.api_key = OPENAI_KEY
 
-def generate_trip_description(pois: List[POI], budget: tuple, duration: int = 1) -> str:
+def generate_trip_description(pois: List[POI], days: int = 2) -> str:
     """GPT ile kişiselleştirilmiş gezi planı oluşturur."""
     try:
         prompt = f"""
-        Kullanıcı için {duration} günlük bir gezi planı oluştur:
-        - Bütçe: {budget[0]}-{budget[1]} TL
-        - Mekanlar: {', '.join([poi.name for poi in pois])}
-        - Türkçe ve maddeler halinde yaz.
-        """
+        Kullanıcı için {days} günlük İstanbul gezisi planı oluştur. Çıktı formatı:
+
+        **1. Gün: [Bölge Adı]**
+        - **Rota:** [Başlangıç] → [Durak 1] → [Durak 2] → [Bitiş]
+        - **Duraklar:**
+        • [Durak 1 Adı]: [2-3 cümlelik bilgi]. [Önerilen zaman aralığı]
+         • [Durak 2 Adı]: [2-3 cümlelik bilgi]. [Önerilen zaman aralığı]
+         - **Öğle Yemeği:** [Mekan önerisi]
+         - **Akşam:** [Mekan önerisi]
+
+        **2. Gün: [Bölge Adı]**
+        - ...
+
+        **Genel Tavsiyeler:**
+         - Ulaşım: [Toplu taşıma/taksi önerileri]
+         - Bütçe: [Ortalama harcama aralığı]
+         - Not: [Güvenlik/giyim önerileri]
+
+         Kullanılacak yerler: {', '.join([poi.name for poi in pois])}
+         """
 
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
@@ -32,7 +47,7 @@ def generate_trip_description(pois: List[POI], budget: tuple, duration: int = 1)
             max_tokens=500
         )
 
-        return response.choices[0].message.content.strip()
+        return response.choices[0].message.content
 
     except Exception as e:
         print(f"GPT Hatası: {e}")
