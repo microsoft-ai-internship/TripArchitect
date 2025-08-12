@@ -5,3 +5,4 @@ venv/
 backend/venv/
 frontend/venv/
 
+.env
