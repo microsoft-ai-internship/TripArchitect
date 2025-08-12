@@ -1,8 +1,9 @@
+# backend/google_maps.py
 import os
 import requests
 from dotenv import load_dotenv
 from typing import List, Tuple
-from urllib.parse import quote  # Yeni eklenen satır
+from urllib.parse import quote_plus
 
 load_dotenv()
 
@@ -10,44 +11,43 @@ GOOGLE_MAPS_KEY = os.getenv("GOOGLE_MAPS_KEY")
 if not GOOGLE_MAPS_KEY:
     raise RuntimeError("GOOGLE_MAPS_KEY environment variable is missing.")
 
-
 def geocode_location(location_name: str) -> Tuple[float, float]:
-    """Geliştirilmiş lokasyon arama"""
-    # Önce doğrudan arama yap
+    """
+    Verilen yer adını Google Geocoding API ile enlem-boylam döner.
+    Eğer doğrudan bulunamazsa, lokasyona şehir/ülke ekleyerek tekrar dener.
+    """
+    location_name = location_name.strip()
     try:
         return _geocode(location_name)
     except ValueError:
-        # Fallback: İstanbul ekleyerek tekrar dene
-        if "İstanbul" not in location_name:
-            try:
-                return _geocode(f"{location_name}, İstanbul")
-            except ValueError:
-                raise ValueError(f"'{location_name}' için koordinat bulunamadı (İstanbul eklenerek de denendi)")
-
+        # Deneme: lokasyona Türkiye ekle (ör: "Nilüfer" -> "Nilüfer, Bursa, Türkiye")
+        try:
+            return _geocode(f"{location_name}, Türkiye")
+        except ValueError:
+            raise ValueError(f"'{location_name}' için koordinat bulunamadı.")
 
 def _geocode(location_name: str) -> Tuple[float, float]:
-    """Gerçek API çağrısı"""
-    encoded_name = quote(location_name)
+    url = "https://maps.googleapis.com/maps/api/geocode/json"
     params = {
-        "address": encoded_name,
+        "address": location_name,
         "key": GOOGLE_MAPS_KEY,
         "language": "tr",
         "region": "tr"
     }
-    res = requests.get("https://maps.googleapis.com/maps/api/geocode/json", params=params)
+    res = requests.get(url, params=params, timeout=10)
+    res.raise_for_status()
     data = res.json()
 
-    if data["status"] != "OK":
-        raise ValueError(data.get("error_message", "Bilinmeyen hata"))
+    if data.get("status") != "OK" or not data.get("results"):
+        raise ValueError(data.get("error_message") or data.get("status") or "Koordinat bulunamadı")
 
     loc = data["results"][0]["geometry"]["location"]
     return (loc["lat"], loc["lng"])
 
-
 def generate_route_url(locations: List[Tuple[float, float]]) -> str:
     """
-    Koordinat listesinden Google Maps Directions embed URL'si üretir.
-    locations: [(lat,lng), (lat,lng), ...] -- en az 2 nokta
+    Google Maps Embed Directions URL üretir.
+    locations: [(lat,lng), (lat,lng), ...]  (en az 2 adet)
     """
     if len(locations) < 2:
         raise ValueError("En az 2 koordinat olmalı.")
@@ -65,7 +65,7 @@ def generate_route_url(locations: List[Tuple[float, float]]) -> str:
         f"&destination={destination[0]},{destination[1]}"
     )
     if waypoints_str:
-        url += f"&waypoints={waypoints_str}"
+        url += f"&waypoints={quote_plus(waypoints_str)}"
     url += "&language=tr"
 
     return url
