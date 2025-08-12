@@ -1,3 +1,5 @@
 .env
 secrets.toml
 config.py
+backend/venv/
+frontend/venv/
