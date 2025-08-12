@@ -1,3 +1,4 @@
+# backend/schemas.py
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -7,12 +8,6 @@ class Location(BaseModel):
 
 class POI(BaseModel):
     name: str
-    location: Location
-    rating: Optional[float]
-    types: List[str]
-
-class TripPlanResponse(BaseModel):
-    hotels: List[POI]
-    pois: List[POI]
-    description: str
-    map_url: str
+    description: Optional[str] = None
+    location: Optional[Location] = None
+    visit_duration: Optional[str] = None

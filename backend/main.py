@@ -1,77 +1,121 @@
+# backend/main.py
+import os
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import List
-from nlp_handler import extract_locations
+from typing import List, Optional
+from dotenv import load_dotenv
+
+load_dotenv()
+
+from gpt_summarizer import parse_user_text_to_structure, generate_place_descriptions
 from google_maps import geocode_location, generate_route_url
+from schemas import POI, Location
 
 app = FastAPI(title="TripArchitect API")
 
-# --- CORS ayarları ---
+# CORS - geliştirme sırasında * kullanımı kolay; prod'da frontend origin'ini belirt.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Gerekirse buraya sadece frontend URL'ini yaz
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
+    allow_credentials=True
 )
 
 class TripRequest(BaseModel):
     text: str
 
+@app.get("/")
+def read_root():
+    return {"message": "TripArchitect API çalışıyor 🚀"}
 
 @app.post("/plan_trip")
 async def plan_trip(request: TripRequest):
+    """
+    Workflow:
+    1) Kullanıcının serbest metnini GPT'ye ver -> yapılandırılmış JSON (days, start,end,stops, budget)
+    2) stops listesindeki mekanları geocode et (koordinatlar)
+    3) Her mekan için kısa açıklama üret (2-4 cümle) — GPT
+    4) route_url oluştur ve JSON döndür
+    """
     try:
-        # 1. Lokasyonları çıkar
-        loc_names = extract_locations(request.text)
-        if len(loc_names) < 2:
-            raise HTTPException(status_code=400, detail="En az iki yer adı bulunmalı.")
+        user_text = request.text.strip()
+        if not user_text:
+            raise HTTPException(status_code=400, detail="Metin boş olamaz.")
 
-        # 2. Koordinatları al
+        # 1) Parse user text -> struct
+        struct = parse_user_text_to_structure(user_text)
+
+        days = struct.get("days")
+        start = struct.get("start_location")
+        end = struct.get("end_location")
+        budget = struct.get("budget")
+        stops_by_day = struct.get("stops", [])  # örn: [ ["A","B"], ["C","D"] ]
+
+        # Eğer stops_by_day boşsa, hata ver veya fallback mekan üret (model sorunsuz yapmalı)
+        if not stops_by_day:
+            raise HTTPException(status_code=400, detail="Rota için yeterli durak çıkartılamadı. Lütfen isteği biraz daha ayrıntılı verin.")
+
+        # 2) Düz bir mekan listesi (sıralı) ve unique list
+        flat_stops = []
+        for day in stops_by_day:
+            for s in day:
+                if s not in flat_stops:
+                    flat_stops.append(s)
+
+        # 3) Koordinatları al (başarısızsa hata tut)
         coords = []
-        pois = []
-        for loc in loc_names:
+        pois: List[POI] = []
+        failed = []
+        for name in flat_stops:
             try:
-                lat, lng = geocode_location(loc)
+                lat, lng = geocode_location(name)
                 coords.append((lat, lng))
-                # POI bilgisi oluştur (basit versiyon)
-                pois.append({
-                    "name": loc,
-                    "description": f"{loc} hakkında bilgi",
-                    "visit_duration": "1-2 saat"
-                })
+                pois.append(POI(
+                    name=name,
+                    location=Location(lat=lat, lng=lng),
+                    visit_duration=None
+                ))
             except Exception as e:
-                raise HTTPException(status_code=404, detail=f"'{loc}' koordinatı bulunamadı: {str(e)}")
+                failed.append({"name": name, "error": str(e)})
 
-        # 3. GPT ile detaylı plan oluştur
-        plan_text = f"""
-        **2 Günlük Gezi Planı: {' → '.join(loc_names)}
+        if not coords:
+            raise HTTPException(status_code=404, detail=f"Hicbir mekan için koordinat bulunamadı. Hata örnekleri: {failed[:3]}")
 
-        **1. Gün: {loc_names[0]}**
-        - Sabah: {loc_names[0]} turu
-        - Öğle: Yöresel lezzetler için mekan önerisi
-        - Akşam: {loc_names[1]}'de gün batımı
+        # 4) Her POI için kısa açıklamalar (2-4 cümle)
+        place_names = [p.name for p in pois]
+        descriptions_map = generate_place_descriptions(place_names)
 
-        **2. Gün: {loc_names[1]}**
-        - Tarihi mekanlar ve kafe önerileri
-        """
+        # Update POIs with descriptions
+        for p in pois:
+            if p.name in descriptions_map:
+                p.description = descriptions_map[p.name]
+            else:
+                p.description = f"{p.name} hakkında bilgi bulunamadı."
 
-        # 4. Harita URL'si
+        # 5) Harita URL (Google Embed)
         route_url = generate_route_url(coords)
 
-        # 5. Frontend'in beklediği formatta dön
-        return {
-            "plan": plan_text,  # Frontend'in kullandığı ana alan
-            "map_url": route_url,
-            "pois": pois,
-            "locations": loc_names,  # Eski uyumluluk için
-            "description": plan_text.split('\n')[0].strip()  # Eski alan
+        # 6) Çıktı düzeni
+        out = {
+            "plan": struct.get("notes") or "",   # modelin 'plan' ya da 'notes' alanı varsa oradan al
+            "days": days,
+            "start_location": start,
+            "end_location": end,
+            "budget": budget,
+            "stops_by_day": stops_by_day,
+            "pois": [p.dict() for p in pois],
+            "map_url": route_url
         }
+
+        return out
 
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Sunucu hatası: {e}")
+
 
 if __name__ == "__main__":
     import uvicorn
