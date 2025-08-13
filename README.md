@@ -66,15 +66,16 @@ TripArchitect/
 ```
 
 
-````markdown
-## ⚙️ Kurulum
+````
+⚙️ Kurulum
 
+````
 1. **Projeyi klonlayın:**
 
 ```bash
 git clone https://github.com/kullaniciadi/TripArchitect.git
 cd TripArchitect/backend
-````
+```
 
 2. **Python sanal ortamı oluşturun:**
 
