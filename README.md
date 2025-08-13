@@ -65,11 +65,8 @@ TripArchitect/
 │   └── venv/
 ```
 
-
-````
 ⚙️ Kurulum
 
-````
 1. **Projeyi klonlayın:**
 
 ```bash
