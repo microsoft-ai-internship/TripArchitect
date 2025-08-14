@@ -133,11 +133,6 @@ uvicorn main:app --reload
 
 ---
 
-## 📄 Lisans
-
-Bu proje **MIT lisansı** altında sunulmaktadır.
-
-````
 
 
 
