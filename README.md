@@ -1,4 +1,4 @@
-# 🗺️ TripArchitect — AI-Powered Smart Route Planner
+# 🗺️ TripArchitect — NLP-Based Travel Chatbot with AI Recommendations
 
 **TripArchitect**, is a route planning application that integrates artificial intelligence and mapping services, allowing users to create travel itineraries through free-text input.
 By simply entering a request such as “A 1-day, 5-stop tour in Beşiktaş,” the user receives a professional route suggestion that includes map links, day-by-day plans, and detailed place descriptions.
