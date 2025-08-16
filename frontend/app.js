@@ -1,8 +1,4 @@
-// frontend/app.js
-// Revize edilmiş, premium UI uyumlu frontend logic.
-// Endpoint: POST http://127.0.0.1:8000/plan_trip
-// Beklenen response: { map_url, plan, days, stops_by_day, pois }
-
+// DOM Elements
 const historyList = document.getElementById('history-list');
 const newChatBtn = document.getElementById('new-chat-btn');
 const sendBtn = document.getElementById('send-btn');
@@ -12,137 +8,195 @@ const themeToggle = document.getElementById('theme-toggle');
 const themeIcon = document.getElementById('theme-icon');
 const currentTitle = document.getElementById('current-conversation-title');
 const clearHistoryBtn = document.getElementById('clear-history');
+const settingsBtn = document.getElementById('settings-btn');
 
-let conversations = []; // { title, date, messages: [{role, content}] }
-let activeConversationIndex = null;
+// State
+let conversations = JSON.parse(localStorage.getItem('conversations')) || [];
+let activeConversationIndex = parseInt(localStorage.getItem('activeConversationIndex')) || null;
 
-function el(tag, cls, html){
+// Helper Functions
+function el(tag, cls, html) {
   const e = document.createElement(tag);
   if (cls) e.className = cls;
   if (html !== undefined) e.innerHTML = html;
   return e;
 }
 
-function nowDate(){ return new Date().toLocaleString(); }
-
-function escapeHtml(s = ''){
-  return String(s)
-    .replaceAll('&','&amp;')
-    .replaceAll('<','&lt;')
-    .replaceAll('>','&gt;');
-}
-
-/* ---------- History / UI helpers ---------- */
-function renderHistory(){
-  if (!historyList) return;
-  historyList.innerHTML = '';
-  if (!conversations.length){
-    const p = el('div','history-empty','<div style="color:var(--muted);font-size:13px;padding:12px;text-align:center">Henüz kayıtlı rota yok. Yeni Rota başlatın.</div>');
-    historyList.appendChild(p);
-    return;
-  }
-  conversations.slice().reverse().forEach((conv, i) => {
-    const idx = conversations.length - 1 - i;
-    const active = (idx === activeConversationIndex) ? ' active' : '';
-    const html = `<div class="title">${escapeHtml(conv.title)}</div><div class="meta">${conv.date}</div>`;
-    const d = el('div','history-item'+active, html);
-    d.addEventListener('click', ()=> loadConversation(idx));
-    historyList.appendChild(d);
+function nowDate() {
+  return new Date().toLocaleString('tr-TR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
   });
 }
 
-function pushMessageToConversation(role, content){
-  if (activeConversationIndex === null){
-    const title = role === 'user' ? (content.length > 40 ? content.slice(0,40)+'…' : content) : 'Yeni Rota';
-    const conv = { title: title || 'Yeni Rota', date: nowDate(), messages: [{role, content}] };
+function escapeHtml(s = '') {
+  return String(s)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
+}
+
+function saveState() {
+  localStorage.setItem('conversations', JSON.stringify(conversations));
+  localStorage.setItem('activeConversationIndex', activeConversationIndex);
+}
+
+// History Management
+function renderHistory() {
+  if (!historyList) return;
+  historyList.innerHTML = '';
+
+  if (!conversations.length) {
+    const emptyState = el('div', 'history-empty', `
+      <div style="color:var(--muted);font-size:13px;padding:12px;text-align:center">
+        <i class="fas fa-compass" style="font-size:24px;margin-bottom:8px;opacity:0.5"></i>
+        <div>Henüz kayıtlı rota yok</div>
+      </div>
+    `);
+    historyList.appendChild(emptyState);
+    return;
+  }
+
+  conversations.slice().reverse().forEach((conv, i) => {
+    const idx = conversations.length - 1 - i;
+    const active = idx === activeConversationIndex ? ' active' : '';
+    const html = `
+      <div class="title">${escapeHtml(conv.title)}</div>
+      <div class="meta">${conv.date}</div>
+    `;
+    const item = el('div', 'history-item' + active, html);
+    item.addEventListener('click', () => loadConversation(idx));
+    historyList.appendChild(item);
+  });
+}
+
+function pushMessageToConversation(role, content) {
+  if (activeConversationIndex === null) {
+    const title = role === 'user'
+      ? (content.length > 40 ? content.slice(0, 40) + '…' : content)
+      : 'Yeni Rota';
+    const conv = {
+      title: title || 'Yeni Rota',
+      date: nowDate(),
+      messages: [{ role, content }]
+    };
     conversations.push(conv);
     activeConversationIndex = conversations.length - 1;
   } else {
-    conversations[activeConversationIndex].messages.push({role, content});
-    // update title if needed
+    conversations[activeConversationIndex].messages.push({ role, content });
     const conv = conversations[activeConversationIndex];
-    if ((!conv.title || conv.title === 'Yeni Rota') && conv.messages.length){
-      const firstUser = conv.messages.find(m=>m.role==='user');
-      if (firstUser) conv.title = firstUser.content.slice(0,40) + (firstUser.content.length>40?'…':'');
+
+    if ((!conv.title || conv.title === 'Yeni Rota') && conv.messages.length) {
+      const firstUser = conv.messages.find(m => m.role === 'user');
+      if (firstUser) {
+        conv.title = firstUser.content.slice(0, 40) +
+                    (firstUser.content.length > 40 ? '…' : '');
+      }
     }
     conv.date = nowDate();
   }
+  saveState();
   renderHistory();
 }
 
-/* ---------- Chat rendering ---------- */
-function showZeroState(){
+// Chat Rendering
+function showZeroState() {
   if (!chatContainer) return;
   chatContainer.innerHTML = `
     <div class="zero-state" role="status" aria-live="polite">
-      <h2>Hoş geldiniz — TripArchitect</h2>
-      <p class="muted">Serbest metin girin. Örnek: <em>"Nilüfer'den Mudanya'ya 1 günlük rota, 5 durak, deniz kenarında öğle molası"</em></p>
+      <div style="font-size:48px;margin-bottom:16px;color:var(--primary);opacity:0.8">
+        <i class="fas fa-route"></i>
+      </div>
+      <h2>TripArchitect'e Hoş Geldiniz</h2>
+      <p class="muted">Seyahat planlarınızı anlatın, AI asistanımız sizin için mükemmel rotayı oluştursun.<br>
+        Örnek: <em>"Eşimle 2 günlük romantik İstanbul gezisi, boğaz manzaralı restoranlar ile"</em></p>
       <div class="zero-cta">
-        <button id="quick-sample" class="primary-btn small">Örnek Rota Başlat</button>
+        <button id="quick-sample" class="primary-btn small">
+          <i class="fas fa-lightbulb"></i> Örnek Rota Göster
+        </button>
       </div>
     </div>
   `;
-  const sample = document.getElementById('quick-sample');
-  if (sample) sample.addEventListener('click', ()=> {
-    userInput.value = "Nilüfer'den Mudanya'ya 1 günlük rota, 5 durak, deniz kenarında öğle molası istiyorum.";
-    userInput.focus();
-  });
+
+  const sampleBtn = document.getElementById('quick-sample');
+  if (sampleBtn) {
+    sampleBtn.addEventListener('click', () => {
+      userInput.value = "Eşimle 2 günlük romantik İstanbul gezisi, boğaz manzaralı restoranlar ile";
+      userInput.focus();
+    });
+  }
 }
 
-function appendUserMessage(text, store=true){
+function appendUserMessage(text, store = true) {
   if (!chatContainer) return;
-  const wrap = el('div','message user-message');
-  const bubble = el('div','message-content user-bubble', `<div class="msg-text">${escapeHtml(text)}</div>`);
+
+  const wrap = el('div', 'message user-message');
+  const bubble = el('div', 'message-content user-bubble', `
+    <div class="msg-text">${escapeHtml(text)}</div>
+  `);
+
   wrap.appendChild(bubble);
   chatContainer.appendChild(wrap);
   chatContainer.scrollTop = chatContainer.scrollHeight;
+
   if (store) pushMessageToConversation('user', text);
 }
 
-function appendBotMessage(html, store=true){
+function appendBotMessage(html, store = true) {
   if (!chatContainer) return;
-  const wrap = el('div','message bot-message');
-  const bubble = el('div','message-content bot-bubble');
+
+  const wrap = el('div', 'message bot-message');
+  const bubble = el('div', 'message-content bot-bubble');
   bubble.innerHTML = html;
+
   wrap.appendChild(bubble);
   chatContainer.appendChild(wrap);
   chatContainer.scrollTop = chatContainer.scrollHeight;
-  if (store) pushMessageToConversation('bot', html);
+
+  if (store) pushMessageToConversation('bot', bubble.innerHTML);
 }
 
-/* load a stored conversation */
-function loadConversation(idx){
+function loadConversation(idx) {
   const conv = conversations[idx];
   if (!conv) return;
+
   activeConversationIndex = idx;
-  currentTitle.innerText = conv.title || 'Rota';
+  currentTitle.textContent = conv.title || 'Rota';
   chatContainer.innerHTML = '';
+
   conv.messages.forEach(m => {
-    if (m.role === 'user') appendUserMessage(m.content, false);
-    else appendBotMessage(m.content, false);
+    if (m.role === 'user') {
+      appendUserMessage(m.content, false);
+    } else {
+      const msg = el('div', 'message-content bot-bubble');
+      msg.innerHTML = m.content;
+      appendBotMessage(msg.innerHTML, false);
+    }
   });
+
+  saveState();
   renderHistory();
 }
 
-/* ---------- Main send handler (keeps backend API same) ---------- */
-if (sendBtn) sendBtn.addEventListener('click', sendHandler);
-if (userInput) {
-  userInput.addEventListener('keydown', (e)=>{
-    if (e.key === 'Enter' && !e.shiftKey){
-      e.preventDefault();
-      sendHandler();
-    }
-  });
-}
-
-async function sendHandler(){
+// Message Sending
+async function sendHandler() {
   const text = (userInput.value || '').trim();
   if (!text) return;
+
   appendUserMessage(text, true);
   userInput.value = '';
 
-  // typing indicator
-  const typing = el('div','typing-indicator','<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>');
+  // Typing indicator
+  const typing = el('div', 'typing-indicator', `
+    <div class="typing-dot"></div>
+    <div class="typing-dot"></div>
+    <div class="typing-dot"></div>
+  `);
   chatContainer.appendChild(typing);
   chatContainer.scrollTop = chatContainer.scrollHeight;
 
@@ -155,103 +209,245 @@ async function sendHandler(){
 
     if (!resp.ok) {
       let errText = `API isteği başarısız. Status: ${resp.status}`;
-      try { const errJson = await resp.json(); if (errJson.detail) errText += ` — ${errJson.detail}`; } catch(e){}
+      try {
+        const errJson = await resp.json();
+        if (errJson.detail) errText += ` — ${errJson.detail}`;
+      } catch (e) {}
       throw new Error(errText);
     }
 
     const data = await resp.json();
     typing.remove();
 
-    // BUILD PREMIUM BOT CARD
-    let card = '';
-
-    // Header info
-    card += `<div class="bot-card">`;
-    card += `<div class="bot-card-head"><div class="bot-card-title">Oluşturulan Rota</div>`;
-    if (data.days) card += `<div class="bot-card-sub">${escapeHtml(String(data.days))} günlük plan</div>`;
-    card += `</div>`;
+    // Build bot response card
+    let card = `
+      <div class="bot-card">
+        <div class="bot-card-head">
+          <div class="bot-card-title">Oluşturulan Rota</div>
+          ${data.days ? `<div class="bot-card-sub">${escapeHtml(String(data.days))} günlük plan</div>` : ''}
+        </div>
+    `;
 
     // Map
     if (data.map_url) {
-      card += `<div class="map-wrap"><iframe class="map-frame" src="${escapeHtml(data.map_url)}" frameborder="0" allowfullscreen="" loading="lazy"></iframe></div>`;
+      card += `
+        <div class="map-wrap">
+          <iframe class="map-frame" src="${escapeHtml(data.map_url)}" frameborder="0" allowfullscreen loading="lazy"></iframe>
+          <div class="map-controls">
+            <button class="map-btn" title="Yol tarifi al"><i class="fas fa-route"></i></button>
+            <button class="map-btn" title="Uydu görünümü"><i class="fas fa-satellite-dish"></i></button>
+            <button class="map-btn" title="Yakınlaştır"><i class="fas fa-search-plus"></i></button>
+          </div>
+        </div>
+      `;
     }
 
     // Plan text
     if (data.plan) {
-      card += `<div class="section"><h4>Plan Özeti</h4><div class="plan-text">${escapeHtml(data.plan).replace(/\n/g,'<br/>')}</div></div>`;
+      card += `
+        <div class="section">
+          <h4>Plan Özeti</h4>
+          <div class="plan-text">${escapeHtml(data.plan).replace(/\n/g, '<br/>')}</div>
+        </div>
+      `;
     }
 
-    // Timeline & POIs
-    if (Array.isArray(data.stops_by_day) && data.stops_by_day.length){
-      card += `<div class="section"><h4>Günlere Göre Rota</h4><div class="timeline">`;
+    // Timeline
+    if (Array.isArray(data.stops_by_day) && data.stops_by_day.length) {
+      card += `
+        <div class="section">
+          <h4>Günlere Göre Rota</h4>
+          <div class="timeline">
+      `;
+
       data.stops_by_day.forEach((day, idx) => {
-        card += `<div class="timeline-day"><div class="day-header"><span class="day-index">${idx+1}</span><div class="day-title">${idx+1}. Gün</div></div><ol class="day-list">`;
+        card += `
+          <div class="timeline-day">
+            <div class="day-header">
+              <span class="day-index">${idx + 1}</span>
+              <div class="day-title">${idx + 1}. Gün</div>
+            </div>
+            <ol class="day-list">
+        `;
+
         day.forEach(place => {
-          // find matching poi description
           const poi = (data.pois || []).find(p => p.name === place);
           const desc = poi && poi.description ? poi.description : '';
-          card += `<li class="place-line"><div class="place-name">${escapeHtml(place)}</div><div class="place-snippet">${escapeHtml(desc)}</div></li>`;
+          card += `
+            <li class="place-line">
+              <div class="place-name">${escapeHtml(place)}</div>
+              <div class="place-snippet">${escapeHtml(desc)}</div>
+            </li>
+          `;
         });
-        card += `</ol></div>`;
+
+        card += `
+            </ol>
+          </div>
+        `;
       });
-      card += `</div></div>`; // timeline + section
+
+      card += `
+          </div>
+        </div>
+      `;
     }
 
-    // POI Cards (grid)
-    if (Array.isArray(data.pois) && data.pois.length){
-      card += `<div class="section"><h4>Mekanlar</h4><div class="poi-grid">`;
+    // POIs
+    if (Array.isArray(data.pois) && data.pois.length) {
+      card += `
+        <div class="section">
+          <h4>Mekanlar</h4>
+          <div class="poi-grid">
+      `;
+
       data.pois.forEach(p => {
         const name = escapeHtml(p.name || '');
         const desc = escapeHtml(p.description || '');
         const addr = escapeHtml(p.address || '');
+
         card += `
           <article class="poi-card">
-            <div class="poi-card-head"><div class="poi-name">${name}</div></div>
+            <div class="poi-card-head">
+              <div class="poi-name">${name}</div>
+            </div>
             <div class="poi-desc">${desc}</div>
-            ${addr ? `<div class="poi-addr">${addr}</div>` : ''}
+            ${addr ? `
+              <div class="poi-addr">
+                <i class="fas fa-map-marker-alt"></i> ${addr}
+              </div>
+            ` : ''}
           </article>
         `;
       });
-      card += `</div></div>`;
+
+      card += `
+          </div>
+        </div>
+      `;
     }
 
     // Actions
-    card += `<div class="card-actions"><button class="primary-btn">⭐ Favorilere Ekle</button><button class="secondary-btn" id="save-route-btn">İndir / Paylaş</button></div>`;
+    card += `
+      <div class="card-actions">
+        <button class="primary-btn" id="save-pdf-btn">
+          <i class="fas fa-file-pdf"></i> PDF Olarak Kaydet
+        </button>
+        <button class="secondary-btn" id="share-route-btn">
+          <i class="fas fa-share-alt"></i> Paylaş
+        </button>
+      </div>
+    `;
 
-    card += `</div>`; // bot-card
-
+    card += `</div>`; // Close bot-card
     appendBotMessage(card, true);
 
-    // wire up save button (optional)
-    setTimeout(()=> {
-      const saveBtn = document.getElementById('save-route-btn');
-      if (saveBtn) saveBtn.addEventListener('click', ()=> {
-        alert('Rota paylaşma / indirme özelliği yakında eklenecek.');
-      });
+    // Add event listeners to new buttons
+    setTimeout(() => {
+      const pdfBtn = document.getElementById('save-pdf-btn');
+      const shareBtn = document.getElementById('share-route-btn');
+
+      if (pdfBtn) {
+        pdfBtn.addEventListener('click', () => {
+          alert('PDF kaydetme özelliği yakında eklenecek.');
+        });
+      }
+
+      if (shareBtn) {
+        shareBtn.addEventListener('click', () => {
+          alert('Paylaşma özelliği yakında eklenecek.');
+        });
+      }
     }, 200);
 
   } catch (err) {
     if (typing && typing.remove) typing.remove();
-    appendBotMessage(`<div class="error">Bir hata oluştu: ${escapeHtml(err.message || String(err))}</div>`, true);
+    appendBotMessage(`
+      <div class="error">
+        <i class="fas fa-exclamation-circle"></i> Bir hata oluştu: ${escapeHtml(err.message || String(err))}
+      </div>
+    `, true);
     console.error(err);
   }
 }
 
-/* ---------- Misc ---------- */
-clearHistoryBtn?.addEventListener('click', ()=>{
+// Event Listeners
+if (sendBtn) sendBtn.addEventListener('click', sendHandler);
+
+if (userInput) {
+  userInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendHandler();
+    }
+  });
+
+  // Auto-resize textarea
+  userInput.addEventListener('input', () => {
+    userInput.style.height = 'auto';
+    userInput.style.height = Math.min(userInput.scrollHeight, 180) + 'px';
+  });
+}
+
+newChatBtn?.addEventListener('click', () => {
+  activeConversationIndex = null;
+  currentTitle.textContent = 'Yeni Rota';
+  showZeroState();
+  saveState();
+});
+
+clearHistoryBtn?.addEventListener('click', () => {
   if (!confirm('Tüm geçmiş rotaları silmek istediğinizden emin misiniz?')) return;
   conversations = [];
   activeConversationIndex = null;
   showZeroState();
+  saveState();
   renderHistory();
 });
 
-function init(){
-  showZeroState();
+settingsBtn?.addEventListener('click', () => {
+  alert('Ayarlar menüsü yakında eklenecek.');
+});
+
+// Theme Toggle
+themeToggle?.addEventListener('click', () => {
+  document.documentElement.classList.toggle('dark');
+  const isDark = document.documentElement.classList.contains('dark');
+  themeIcon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+});
+
+// Initialize
+function init() {
+  // Load theme preference
+  if (localStorage.getItem('theme') === 'dark' ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem('theme'))) {
+    document.documentElement.classList.add('dark');
+    themeIcon.className = 'fas fa-sun';
+  }
+
+  // Load conversation if exists
+  if (activeConversationIndex !== null && conversations[activeConversationIndex]) {
+    loadConversation(activeConversationIndex);
+  } else {
+    showZeroState();
+  }
+
   renderHistory();
-  if (userInput) userInput.value = '';
 }
+
 init();
 
-/* expose for debugging */
-window._TA = { conversations, loadConversation, renderHistory };
+// For debugging
+window._TA = {
+  conversations,
+  loadConversation,
+  renderHistory,
+  clearHistory: () => {
+    conversations = [];
+    activeConversationIndex = null;
+    saveState();
+    renderHistory();
+    showZeroState();
+  }
+};
