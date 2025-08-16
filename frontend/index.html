@@ -4,9 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TripArchitect Pro</title>
+  <meta name="description" content="Akıllı seyahat planlama asistanı - Yapay zeka destekli rota oluşturucu">
 
   <!-- Tipografi -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- İkonlar -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
@@ -22,7 +23,7 @@
           <div class="brand-mark" aria-hidden="true">TA</div>
           <div class="brand-text">
             <div class="title">TripArchitect</div>
-            <div class="subtitle">Pro</div>
+            <div class="subtitle">AI Travel Planner</div>
           </div>
         </div>
 
@@ -39,7 +40,9 @@
       <div class="history-section">
         <div class="history-header">
           <h4 class="history-title">Geçmiş Rotalar</h4>
-          <button id="clear-history" class="tiny-btn" title="Temizle" aria-label="Geçmişi temizle"><i class="fas fa-trash"></i></button>
+          <button id="clear-history" class="tiny-btn" title="Temizle" aria-label="Geçmişi temizle">
+            <i class="fas fa-trash"></i>
+          </button>
         </div>
 
         <div id="history-list" class="history-list" role="list"></div>
@@ -60,8 +63,8 @@
           <div class="assistant">
             <div class="avatar">AI</div>
             <div class="assistant-info">
-              <div class="assistant-title">TripArchitect AI Assistant</div>
-              <div class="assistant-sub">Profesyonel rota & gezi planlama</div>
+              <div class="assistant-title">TripArchitect AI</div>
+              <div class="assistant-sub">Akıllı seyahat planlama asistanı</div>
             </div>
           </div>
         </div>
@@ -75,7 +78,8 @@
       </section>
 
       <div class="composer">
-        <textarea id="user-input" placeholder="Planını buraya yaz… Örn: 2 günlük İstanbul gezisi…" rows="1" aria-label="Sohbet girişi"></textarea>
+        <textarea id="user-input" placeholder="Seyahat planınızı buraya yazın... Örn: '3 günlük İstanbul gezisi, tarihi mekanlar ve deniz manzaralı restoranlar ile'"
+                  rows="1" aria-label="Sohbet girişi"></textarea>
         <div class="composer-actions">
           <button id="send-btn" class="action-send" title="Gönder" aria-label="Gönder">
             <i class="fas fa-paper-plane"></i>
