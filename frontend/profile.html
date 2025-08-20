@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TripArchitect Pro - Profil</title>
+  <meta name="description" content="Profil ve seyahat tercihleriniz">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+
+  <style>
+    /* CSS Variables */
+    :root {
+      --primary: #4285F4;
+      --secondary: #34A853;
+      --accent: #FF6D00;
+      --accent-light: #FF9E67;
+      --bg: #F8FAFF;
+      --surface: #FFFFFF;
+      --text: #202124;
+      --muted: #5F6368;
+      --error: #FF4D4F;
+      --success: #34A853;
+      --warning: #FBBC05;
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+      --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+      --ease: cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+
+    /* Dark Theme Variables */
+    .dark {
+      --primary: #8AB4F8;
+      --secondary: #81C995;
+      --accent: #FF9E67;
+      --accent-light: #FFB98A;
+      --bg: #0F0F0F;
+      --surface: #1F1F1F;
+      --text: #E8EAED;
+      --muted: #9AA0A6;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.25);
+    }
+
+    /* Base Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.3s var(--ease);
+    }
+
+    /* App Layout */
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--surface);
+      border-right: 1px solid rgba(0,0,0,0.05);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding: 8px;
+    }
+
+    .brand-mark {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .brand-text {
+      font-weight: 600;
+    }
+
+    .nav-menu {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-item {
+      padding: 12px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--muted);
+      transition: all 0.2s var(--ease);
+    }
+
+    .nav-item:hover, .nav-item.active {
+      background: rgba(0,0,0,0.05);
+      color: var(--text);
+    }
+
+    .nav-item i {
+      width: 20px;
+      text-align: center;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 24px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .page-title {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border-radius: var(--radius-sm);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      box-shadow: 0 4px 12px rgba(66, 133, 244, 0.2);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(66, 133, 244, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid rgba(0,0,0,0.1);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(0,0,0,0.05);
+      border-color: rgba(0,0,0,0.15);
+    }
+
+    /* Profile Sections */
+    .profile-section {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    /* Profile Info */
+    .profile-info {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .profile-avatar {
+      position: relative;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+    }
+
+    .profile-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-edit {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      cursor: pointer;
+    }
+
+    .profile-details h3 {
+      font-size: 18px;
+      margin-bottom: 4px;
+    }
+
+    .profile-details p {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* Form Styles */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .form-control {
+      padding: 12px 16px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(0,0,0,0.1);
+      background: rgba(0,0,0,0.05);
+      font-size: 15px;
+      color: var(--text);
+      transition: all 0.2s var(--ease);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: rgba(0,0,0,0.08);
+      box-shadow: 0 0 0 3px rgba(66, 133, 244, 0.1);
+    }
+
+    /* Preference Test */
+    .preference-test {
+      margin-top: 24px;
+    }
+
+    .test-progress {
+      height: 6px;
+      background: rgba(0,0,0,0.05);
+      border-radius: 3px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      width: 0%;
+      transition: width 0.3s var(--ease);
+    }
+
+    .question-container {
+      display: none;
+    }
+
+    .question-container.active {
+      display: block;
+      animation: fadeIn 0.3s var(--ease);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .question-text {
+      font-size: 18px;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .option-card {
+      padding: 16px;
+      border-radius: var(--radius-md);
+      background: rgba(0,0,0,0.03);
+      border: 1px solid rgba(0,0,0,0.05);
+      cursor: pointer;
+      transition: all 0.2s var(--ease);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .option-card:hover {
+      background: rgba(0,0,0,0.05);
+      transform: translateY(-2px);
+    }
+
+    .option-card.selected {
+      background: rgba(66, 133, 244, 0.1);
+      border-color: var(--primary);
+    }
+
+    .option-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      background: var(--primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .option-text {
+      font-weight: 500;
+    }
+
+    .test-navigation {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 24px;
+    }
+
+    /* Results */
+    .preference-results {
+      display: block;
+    }
+
+    .preference-category {
+      margin-bottom: 24px;
+    }
+
+    .category-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .category-title i {
+      color: var(--primary);
+    }
+
+    .preference-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 6px 12px;
+      background: rgba(0,0,0,0.05);
+      border-radius: 20px;
+      font-size: 14px;
+    }
+
+    /* Danger Zone */
+    .danger-zone {
+      border-top: 1px dashed rgba(255, 77, 79, 0.3);
+      padding-top: 24px;
+      margin-top: 24px;
+    }
+
+    .danger-zone h4 {
+      color: var(--error);
+      margin-bottom: 16px;
+    }
+
+    .btn-danger {
+      background: transparent;
+      border: 1px solid var(--error);
+      color: var(--error);
+    }
+
+    .btn-danger:hover {
+      background: rgba(255, 77, 79, 0.1);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .app-shell {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        flex-direction: row;
+        padding: 12px;
+        border-right: none;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+      }
+
+      .brand {
+        margin-bottom: 0;
+        margin-right: auto;
+      }
+
+      .nav-menu {
+        flex-direction: row;
+        flex: 0;
+      }
+
+      .nav-item span {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body class="dark">
+  <div class="app-shell">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">TA</div>
+        <div class="brand-text">TripArchitect</div>
+      </div>
+
+      <nav class="nav-menu">
+        <a href="index.html" class="nav-item">
+          <i class="fas fa-home"></i>
+          <span>Ana Sayfa</span>
+        </a>
+        <a href="#" class="nav-item active">
+          <i class="fas fa-user"></i>
+          <span>Profil</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-heart"></i>
+          <span>Favoriler</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-history"></i>
+          <span>Geçmiş</span>
+        </a>
+        <a href="#" class="nav-item">
+          <i class="fas fa-cog"></i>
+          <span>Ayarlar</span>
+        </a>
+        <a href="login.html" class="nav-item">
+          <i class="fas fa-sign-out-alt"></i>
+          <span>Çıkış Yap</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="topbar">
+        <h1 class="page-title">Profilim</h1>
+        <button class="btn btn-secondary">
+          <i class="fas fa-save"></i> Kaydet
+        </button>
+      </div>
+
+      <!-- Profile Info Section -->
+      <section class="profile-section">
+        <div class="section-header">
+          <h2 class="section-title">Profil Bilgileri</h2>
+        </div>
+
+        <div class="profile-info">
+          <div class="profile-avatar">
+            <img src="https://ui-avatars.com/api/?name=Kullanıcı+Adı&background=4285F4&color=fff" alt="Profil Fotoğrafı">
+            <button class="avatar-edit">
+              <i class="fas fa-camera"></i>
+            </button>
+          </div>
+
+          <div class="profile-details">
+            <h3>Kullanıcı Adı</h3>
+            <p>kullanici@email.com</p>
+          </div>
+        </div>
+
+        <form class="form-grid">
+          <div class="form-group">
+            <label for="fullname">Ad Soyad</label>
+            <input type="text" id="fullname" class="form-control" value="Kullanıcı Adı">
+          </div>
+
+          <div class="form-group">
+            <label for="email">E-posta</label>
+            <input type="email" id="email" class="form-control" value="kullanici@email.com">
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Telefon</label>
+            <input type="tel" id="phone" class="form-control" value="+90 555 123 4567">
+          </div>
+
+          <div class="form-group">
+            <label for="location">Konum</label>
+            <input type="text" id="location" class="form-control" value="İstanbul, Türkiye">
+          </div>
+
+          <div class="form-group">
+            <label for="bio">Hakkımda</label>
+            <textarea id="bio" class="form-control" rows="3">Seyahat tutkunu ve TripArchitect kullanıcısı</textarea>
+          </div>
+        </form>
+      </section>
+
+      <!-- Travel Preferences Section -->
+      <section class="profile-section">
+        <div class="section-header">
+          <h2 class="section-title">Seyahat Tercihleriniz</h2>
+          <button id="edit-preferences" class="btn btn-secondary">
+            <i class="fas fa-edit"></i> Düzenle
+          </button>
+        </div>
+
+        <div id="preference-results" class="preference-results">
+          <div class="preference-category">
+            <h4 class="category-title">
+              <i class="fas fa-utensils"></i>
+              Yemek Tercihleri
+            </h4>
+            <div class="preference-tags">
+              <span class="tag">Geleneksel Lezzetler</span>
+              <span class="tag">Deniz Ürünleri</span>
+              <span class="tag">Sokak Lezzetleri</span>
+            </div>
+          </div>
+
+          <div class="preference-category">
+            <h4 class="category-title">
+              <i class="fas fa-archway"></i>
+              Aktivite Tercihleri
+            </h4>
+            <div class="preference-tags">
+              <span class="tag">Tarihi Mekanlar</span>
+              <span class="tag">Müzeler</span>
+              <span class="tag">Doğa Yürüyüşü</span>
+            </div>
+          </div>
+
+          <div class="preference-category">
+            <h4 class="category-title">
+              <i class="fas fa-moon"></i>
+              Zaman Tercihleri
+            </h4>
+            <div class="preference-tags">
+              <span class="tag">Sabah Etkinlikleri</span>
+              <span class="tag">Akşam Yemekleri</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preference Test (Hidden by default) -->
+        <div id="preference-test" class="preference-test" style="display: none;">
+          <div class="test-progress">
+            <div class="progress-bar" id="progress-bar" style="width: 5%;"></div>
+          </div>
+
+          <!-- Question 1 -->
+          <div class="question-container active" data-question="1">
+            <h3 class="question-text">Seyahatlerinizde hangi tür yemekleri tercih edersiniz?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="traditional">
+                <div class="option-icon">
+                  <i class="fas fa-drumstick-bite"></i>
+                </div>
+                <div class="option-text">Geleneksel ve yerel lezzetler</div>
+              </div>
+              <div class="option-card" data-value="modern">
+                <div class="option-icon">
+                  <i class="fas fa-utensils"></i>
+                </div>
+                <div class="option-text">Modern ve farklı mutfaklar</div>
+              </div>
+              <div class="option-card" data-value="street">
+                <div class="option-icon">
+                  <i class="fas fa-hotdog"></i>
+                </div>
+                <div class="option-text">Sokak lezzetleri ve atıştırmalıklar</div>
+              </div>
+              <div class="option-card" data-value="fine">
+                <div class="option-icon">
+                  <i class="fas fa-wine-glass-alt"></i>
+                </div>
+                <div class="option-text">Lüks restoran deneyimleri</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 2 -->
+          <div class="question-container" data-question="2">
+            <h3 class="question-text">Hangi tür mekanları gezmekten hoşlanırsınız?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="historical">
+                <div class="option-icon">
+                  <i class="fas fa-landmark"></i>
+                </div>
+                <div class="option-text">Tarihi ve kültürel mekanlar</div>
+              </div>
+              <div class="option-card" data-value="modern">
+                <div class="option-icon">
+                  <i class="fas fa-city"></i>
+                </div>
+                <div class="option-text">Modern mimari ve şehir yaşamı</div>
+              </div>
+              <div class="option-card" data-value="nature">
+                <div class="option-icon">
+                  <i class="fas fa-tree"></i>
+                </div>
+                <div class="option-text">Doğa ve açık hava aktiviteleri</div>
+              </div>
+              <div class="option-card" data-value="shopping">
+                <div class="option-icon">
+                  <i class="fas fa-shopping-bag"></i>
+                </div>
+                <div class="option-text">Alışveriş ve eğlence mekanları</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 3 -->
+          <div class="question-container" data-question="3">
+            <h3 class="question-text">Günün hangi saatlerinde aktif olmayı tercih edersiniz?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="morning">
+                <div class="option-icon">
+                  <i class="fas fa-sun"></i>
+                </div>
+                <div class="option-text">Sabah erken (06:00-10:00)</div>
+              </div>
+              <div class="option-card" data-value="day">
+                <div class="option-icon">
+                  <i class="fas fa-clock"></i>
+                </div>
+                <div class="option-text">Gün içi (10:00-16:00)</div>
+              </div>
+              <div class="option-card" data-value="evening">
+                <div class="option-icon">
+                  <i class="fas fa-moon"></i>
+                </div>
+                <div class="option-text">Akşamüstü (16:00-20:00)</div>
+              </div>
+              <div class="option-card" data-value="night">
+                <div class="option-icon">
+                  <i class="fas fa-star"></i>
+                </div>
+                <div class="option-text">Gece (20:00-00:00)</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 4 -->
+          <div class="question-container" data-question="4">
+            <h3 class="question-text">Seyahat bütçeniz genellikle nasıl olur?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="budget">
+                <div class="option-icon">
+                  <i class="fas fa-wallet"></i>
+                </div>
+                <div class="option-text">Ekonomik - Bütçe dostu</div>
+              </div>
+              <div class="option-card" data-value="moderate">
+                <div class="option-icon">
+                  <i class="fas fa-coins"></i>
+                </div>
+                <div class="option-text">Orta - Rahat bir bütçe</div>
+              </div>
+              <div class="option-card" data-value="luxury">
+                <div class="option-icon">
+                  <i class="fas fa-gem"></i>
+                </div>
+                <div class="option-text">Lüks - Hiçbir masraftan kaçınmam</div>
+              </div>
+              <div class="option-card" data-value="mixed">
+                <div class="option-icon">
+                  <i class="fas fa-balance-scale"></i>
+                </div>
+                <div class="option-text">Karma - Bazı şeyler lüks, bazıları ekonomik</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 5 -->
+          <div class="question-container" data-question="5">
+            <h3 class="question-text">Konaklama tercihiniz nedir?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="hotel">
+                <div class="option-icon">
+                  <i class="fas fa-hotel"></i>
+                </div>
+                <div class="option-text">Otel - Tüm imkanlar hazır olsun</div>
+              </div>
+              <div class="option-card" data-value="hostel">
+                <div class="option-icon">
+                  <i class="fas fa-bed"></i>
+                </div>
+                <div class="option-text">Hostel - Sosyal ortam ve ekonomik</div>
+              </div>
+              <div class="option-card" data-value="apartment">
+                <div class="option-icon">
+                  <i class="fas fa-home"></i>
+                </div>
+                <div class="option-text">Daire - Ev konforunda</div>
+              </div>
+              <div class="option-card" data-value="unique">
+                <div class="option-icon">
+                  <i class="fas fa-tree"></i>
+                </div>
+                <div class="option-text">Benzersiz - Ağaç ev, yat, vs.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 6 -->
+          <div class="question-container" data-question="6">
+            <h3 class="question-text">Ulaşım tercihiniz nedir?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="walking">
+                <div class="option-icon">
+                  <i class="fas fa-walking"></i>
+                </div>
+                <div class="option-text">Yürüyerek - Keşif için en iyisi</div>
+              </div>
+              <div class="option-card" data-value="public">
+                <div class="option-icon">
+                  <i class="fas fa-bus"></i>
+                </div>
+                <div class="option-text">Toplu taşıma - Yerel hayatı deneyimle</div>
+              </div>
+              <div class="option-card" data-value="taxi">
+                <div class="option-icon">
+                  <i class="fas fa-taxi"></i>
+                </div>
+                <div class="option-text">Taksi/Uber - Konfor ve hız</div>
+              </div>
+              <div class="option-card" data-value="rental">
+                <div class="option-icon">
+                  <i class="fas fa-car"></i>
+                </div>
+                <div class="option-text">Araç kiralama - Özgürlük ve esneklik</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 7 -->
+          <div class="question-container" data-question="7">
+            <h3 class="question-text">Seyahat tempom nasıl olsun?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="relaxed">
+                <div class="option-icon">
+                  <i class="fas fa-couch"></i>
+                </div>
+                <div class="option-text">Rahat - Bolca dinlenme zamanı</div>
+              </div>
+              <div class="option-card" data-value="balanced">
+                <div class="option-icon">
+                  <i class="fas fa-balance-scale"></i>
+                </div>
+                <div class="option-text">Dengeli - Aktivite ve dinlenme karışık</div>
+              </div>
+              <div class="option-card" data-value="active">
+                <div class="option-icon">
+                  <i class="fas fa-running"></i>
+                </div>
+                <div class="option-text">Aktif - Mümkün olduğunca çok şey gör</div>
+              </div>
+              <div class="option-card" data-value="adventure">
+                <div class="option-icon">
+                  <i class="fas fa-hiking"></i>
+                </div>
+                <div class="option-text">Macera - Spontane ve heyecan dolu</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 8 -->
+          <div class="question-container" data-question="8">
+            <h3 class="question-text">Seyahatlerde kiminle olmayı tercih edersiniz?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="solo">
+                <div class="option-icon">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="option-text">Yalnız - Kendi başıma keşfetmek</div>
+              </div>
+              <div class="option-card" data-value="couple">
+                <div class="option-icon">
+                  <i class="fas fa-heart"></i>
+                </div>
+                <div class="option-text">Çift - Romantik bir kaçamak</div>
+              </div>
+              <div class="option-card" data-value="friends">
+                <div class="option-icon">
+                  <i class="fas fa-users"></i>
+                </div>
+                <div class="option-text">Arkadaşlarla - Eğlence ve sosyallik</div>
+              </div>
+              <div class="option-card" data-value="family">
+                <div class="option-icon">
+                  <i class="fas fa-home"></i>
+                </div>
+                <div class="option-text">Aile - Herkes için uygun aktiviteler</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 9 -->
+          <div class="question-container" data-question="9">
+            <h3 class="question-text">Hangi tür iklimi tercih edersiniz?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="warm">
+                <div class="option-icon">
+                  <i class="fas fa-sun"></i>
+                </div>
+                <div class="option-text">Sıcak - Güneş, deniz, plaj</div>
+              </div>
+              <div class="option-card" data-value="mild">
+                <div class="option-icon">
+                  <i class="fas fa-cloud-sun"></i>
+                </div>
+                <div class="option-text">Ilıman - Ne çok sıcak ne çok soğuk</div>
+              </div>
+              <div class="option-card" data-value="cool">
+                <div class="option-icon">
+                  <i class="fas fa-cloud"></i>
+                </div>
+                <div class="option-text">Serin - Hafif bir hava, rahat gezi</div>
+              </div>
+              <div class="option-card" data-value="cold">
+                <div class="option-icon">
+                  <i class="fas fa-snowflake"></i>
+                </div>
+                <div class="option-text">Soğuk - Kar ve kış aktiviteleri</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 10 -->
+          <div class="question-container" data-question="10">
+            <h3 class="question-text">Seyahatlerde fotoğraf çekmeyi sever misiniz?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="photo_enthusiast">
+                <div class="option-icon">
+                  <i class="fas fa-camera"></i>
+                </div>
+                <div class="option-text">Tutkulu - Her anı kaydetmek isterim</div>
+              </div>
+              <div class="option-card" data-value="photo_some">
+                <div class="option-icon">
+                  <i class="fas fa-image"></i>
+                </div>
+                <div class="option-text">Biraz - Önemli anları çekerim</div>
+              </div>
+              <div class="option-card" data-value="photo_minimal">
+                <div class="option-icon">
+                  <i class="fas fa-mobile"></i>
+                </div>
+                <div class="option-text">Minimum - Sadece birkaç kare yeter</div>
+              </div>
+              <div class="option-card" data-value="photo_none">
+                <div class="option-icon">
+                  <i class="fas fa-eye"></i>
+                </div>
+                <div class="option-text">Hiç - Anı yaşamayı tercih ederim</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 11 -->
+          <div class="question-container" data-question="11">
+            <h3 class="question-text">Alışveriş yapmak için ne kadar zaman ayırırsınız?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="shopping_heavy">
+                <div class="option-icon">
+                  <i class="fas fa-shopping-cart"></i>
+                </div>
+                <div class="option-text">Çok - Seyahatlerimin önemli bir parçası</div>
+              </div>
+              <div class="option-card" data-value="shopping_some">
+                <div class="option-icon">
+                  <i class="fas fa-gift"></i>
+                </div>
+                <div class="option-text">Biraz - Hediyelik eşya ve küçük alışveriş</div>
+              </div>
+              <div class="option-card" data-value="shopping_little">
+                <div class="option-icon">
+                  <i class="fas fa-store"></i>
+                </div>
+                <div class="option-text">Az - Sadece gerçekten ihtiyacım olursa</div>
+              </div>
+              <div class="option-card" data-value="shopping_none">
+                <div class="option-icon">
+                  <i class="fas fa-ban"></i>
+                </div>
+                <div class="option-text">Hiç - Alışverişten hoşlanmam</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 12 -->
+          <div class="question-container" data-question="12">
+            <h3 class="question-text">Gece hayatı için tercihiniz nedir?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="nightlife_vibrant">
+                <div class="option-icon">
+                  <i class="fas fa-glass-cheers"></i>
+                </div>
+                <div class="option-text">Canlı - Barlar, kulüpler, partiler</div>
+              </div>
+              <div class="option-card" data-value="nightlife_cultural">
+                <div class="option-icon">
+                  <i class="fas fa-theater-masks"></i>
+                </div>
+                <div class="option-text">Kültürel - Tiyatro, konser, gösteriler</div>
+              </div>
+              <div class="option-card" data-value="nightlight_relaxed">
+                <div class="option-icon">
+                  <i class="fas fa-wine-glass"></i>
+                </div>
+                <div class="option-text">Sakin - Rahat bir mekanda içki</div>
+              </div>
+              <div class="option-card" data-value="nightlife_none">
+                <div class="option-icon">
+                  <i class="fas fa-moon"></i>
+                </div>
+                <div class="option-text">Yok - Erken yatmayı tercih ederim</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 13 -->
+          <div class="question-container" data-question="13">
+            <h3 class="question-text">Doğa aktivitelerine ilginiz nedir?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="nature_high">
+                <div class="option-icon">
+                  <i class="fas fa-mountain"></i>
+                </div>
+                <div class="option-text">Yüksek - Dağ yürüyüşü, kamp, macera</div>
+              </div>
+              <div class="option-card" data-value="nature_medium">
+                <div class="option-icon">
+                  <i class="fas fa-hiking"></i>
+                </div>
+                <div class="option-text">Orta - Doğa yürüyüşü, piknik</div>
+              </div>
+              <div class="option-card" data-value="nature_low">
+                <div class="option-icon">
+                  <i class="fas fa-tree"></i>
+                </div>
+                <div class="option-text">Düşük - Sadece manzara izlemek</div>
+              </div>
+              <div class="option-card" data-value="nature_none">
+                <div class="option-icon">
+                  <i class="fas fa-city"></i>
+                </div>
+                <div class="option-text">Hiç - Şehir hayatını tercih ederim</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 14 -->
+          <div class="question-container" data-question="14">
+            <h3 class="question-text">Müzeler ve sanat galerileri ilginizi çeker mi?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="museums_high">
+                <div class="option-icon">
+                  <i class="fas fa-landmark"></i>
+                </div>
+                <div class="option-text">Çok - Her müze ve galeriyi gezmek isterim</div>
+              </div>
+              <div class="option-card" data-value="museums_selective">
+                <div class="option-icon">
+                  <i class="fas fa-palette"></i>
+                </div>
+                <div class="option-text">Seçici - Sadece ilgimi çekenleri gezerim</div>
+              </div>
+              <div class="option-card" data-value="museums_occasional">
+                <div class="option-icon">
+                  <i class="fas fa-university"></i>
+                </div>
+                <div class="option-text">Ara sıra - Ünlü olanları görürüm</div>
+              </div>
+              <div class="option-card" data-value="museums_none">
+                <div class="option-icon">
+                  <i class="fas fa-times"></i>
+                </div>
+                <div class="option-text">Hiç - Müzeler ilgimi çekmez</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 15 -->
+          <div class="question-container" data-question="15">
+            <h3 class="question-text">Yerel halkla etkileşim kurmayı sever misiniz?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="local_high">
+                <div class="option-icon">
+                  <i class="fas fa-handshake"></i>
+                </div>
+                <div class="option-text">Çok - Yerel kültürü deneyimlemek için</div>
+              </div>
+              <div class="option-card" data-value="local_medium">
+                <div class="option-icon">
+                  <i class="fas fa-comments"></i>
+                </div>
+                <div class="option-text">Orta - Gerektiğinde iletişim kurarım</div>
+              </div>
+              <div class="option-card" data-value="local_low">
+                <div class="option-icon">
+                  <i class="fas fa-user"></i>
+                </div>
+                <div class="option-text">Az - Sadece temel ihtiyaçlar için</div>
+              </div>
+              <div class="option-card" data-value="local_none">
+                <div class="option-icon">
+                  <i class="fas fa-ban"></i>
+                </div>
+                <div class="option-text">Hiç - Mümkün olduğunca az etkileşim</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 16 -->
+          <div class="question-container" data-question="16">
+            <h3 class="question-text">Seyahatlerinizde dil öğrenmeye çalışır mısınız?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="language_enthusiast">
+                <div class="option-icon">
+                  <i class="fas fa-language"></i>
+                </div>
+                <div class="option-text">Evet - Temel ifadeleri öğrenmeye çalışırım</div>
+              </div>
+              <div class="option-card" data-value="language_basic">
+                <div class="option-icon">
+                  <i class="fas fa-book"></i>
+                </div>
+                <div class="option-text">Biraz - Sadece merhaba, teşekkür gibi</div>
+              </div>
+              <div class="option-card" data-value="language_app">
+                <div class="option-icon">
+                  <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="option-text">Uygulama - Çeviri uygulamaları kullanırım</div>
+              </div>
+              <div class="option-card" data-value="language_none">
+                <div class="option-icon">
+                  <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="option-text">Hayır - İngilizce veya işaret dili yeterli</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 17 -->
+          <div class="question-container" data-question="17">
+            <h3 class="question-text">Seyahat planınızı ne kadar detaylı yaparsınız?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="planning_detailed">
+                <div class="option-icon">
+                  <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div class="option-text">Detaylı - Her saati planlanmış</div>
+              </div>
+              <div class="option-card" data-value="planning_structured">
+                <div class="option-icon">
+                  <i class="fas fa-list"></i>
+                </div>
+                <div class="option-text">Yapılandırılmış - Ana aktiviteler planlı</div>
+              </div>
+              <div class="option-card" data-value="planning_flexible">
+                <div class="option-icon">
+                  <i class="fas fa-compass"></i>
+                </div>
+                <div class="option-text">Esnek - Genel bir fikir, spontane hareket</div>
+              </div>
+              <div class="option-card" data-value="planning_spontaneous">
+                <div class="option-icon">
+                  <i class="fas fa-random"></i>
+                </div>
+                <div class="option-text">Spontane - Hiç plan yok, anlık karar</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 18 -->
+          <div class="question-container" data-question="18">
+            <h3 class="question-text">Teknolojiyi seyahatlerinizde ne kadar kullanırsınız?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="tech_heavy">
+                <div class="option-icon">
+                  <i class="fas fa-laptop"></i>
+                </div>
+                <div class="option-text">Çok - Her şey için uygulama kullanırım</div>
+              </div>
+              <div class="option-card" data-value="tech_medium">
+                <div class="option-icon">
+                  <i class="fas fa-mobile-alt"></i>
+                </div>
+                <div class="option-text">Orta - Navigasyon ve temel ihtiyaçlar</div>
+              </div>
+              <div class="option-card" data-value="tech_light">
+                <div class="option-icon">
+                  <i class="fas fa-map"></i>
+                </div>
+                <div class="option-text">Hafif - Sadece harita ve acil durumlar</div>
+              </div>
+              <div class="option-card" data-value="tech_none">
+                <div class="option-icon">
+                  <i class="fas fa-tree"></i>
+                </div>
+                <div class="option-text">Hiç - Teknolojiden uzak kalmak isterim</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 19 -->
+          <div class="question-container" data-question="19">
+            <h3 class="question-text">Seyahatlerinizde wellness ve spa aktiviteleri?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="wellness_high">
+                <div class="option-icon">
+                  <i class="fas fa-spa"></i>
+                </div>
+                <div class="option-text">Çok - Masaj, spa, yoga önemli</div>
+              </div>
+              <div class="option-card" data-value="wellness_medium">
+                <div class="option-icon">
+                  <i class="fas fa-heart"></i>
+                </div>
+                <div class="option-text">Orta - Ara sıra rahatlama aktiviteleri</div>
+              </div>
+              <div class="option-card" data-value="wellness_low">
+                <div class="option-icon">
+                  <i class="fas fa-bed"></i>
+                </div>
+                <div class="option-text">Az - Sadece dinlenme yeterli</div>
+              </div>
+              <div class="option-card" data-value="wellness_none">
+                <div class="option-icon">
+                  <i class="fas fa-times"></i>
+                </div>
+                <div class="option-text">Hiç - İlgimi çekmez</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question 20 -->
+          <div class="question-container" data-question="20">
+            <h3 class="question-text">Seyahatlerinizde önceliğiniz nedir?</h3>
+            <div class="options-grid">
+              <div class="option-card" data-value="priority_culture">
+                <div class="option-icon">
+                  <i class="fas fa-landmark"></i>
+                </div>
+                <div class="option-text">Kültür - Tarih, mimari, gelenekler</div>
+              </div>
+              <div class="option-card" data-value="priority_food">
+                <div class="option-icon">
+                  <i class="fas fa-utensils"></i>
+                </div>
+                <div class="option-text">Yemek - Yerel mutfak ve lezzetler</div>
+              </div>
+              <div class="option-card" data-value="priority_adventure">
+                <div class="option-icon">
+                  <i class="fas fa-hiking"></i>
+                </div>
+                <div class="option-text">Macera - Aktivite ve adrenalin</div>
+              </div>
+              <div class="option-card" data-value="priority_relaxation">
+                <div class="option-icon">
+                  <i class="fas fa-umbrella-beach"></i>
+                </div>
+                <div class="option-text">Rahatlık - Dinlenme ve huzur</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="test-navigation">
+            <button id="prev-question" class="btn btn-secondary" disabled>
+              <i class="fas fa-arrow-left"></i> Önceki
+            </button>
+            <button id="next-question" class="btn btn-primary">
+              Sonraki <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Danger Zone -->
+      <section class="profile-section">
+        <div class="danger-zone">
+          <h4><i class="fas fa-exclamation-triangle"></i> Tehlikeli Bölge</h4>
+          <button class="btn btn-danger">
+            <i class="fas fa-trash"></i> Hesabımı Sil
+          </button>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // DOM Elements
+    const editPrefBtn = document.getElementById('edit-preferences');
+    const prefTest = document.getElementById('preference-test');
+    const prefResults = document.getElementById('preference-results');
+    const prevBtn = document.getElementById('prev-question');
+    const nextBtn = document.getElementById('next-question');
+    const progressBar = document.getElementById('progress-bar');
+    const questionContainers = document.querySelectorAll('.question-container');
+    const optionCards = document.querySelectorAll('.option-card');
+
+    // Test State
+    let currentQuestion = 1;
+    const totalQuestions = 20;
+    const userPreferences = {
+      food: [],
+      activities: [],
+      time: [],
+      budget: [],
+      transportation: [],
+      accommodation: [],
+      pace: [],
+      company: [],
+      climate: [],
+      photography: [],
+      shopping: [],
+      nightlife: [],
+      nature: [],
+      museums: [],
+      local_interaction: [],
+      language: [],
+      planning: [],
+      technology: [],
+      wellness: [],
+      priority: []
+    };
+
+    // Initialize
+    function init() {
+      // Load theme preference
+      if (localStorage.getItem('theme') === 'dark' ||
+          (window.matchMedia('(prefers-color-scheme: dark)').matches && !localStorage.getItem('theme'))) {
+        document.documentElement.classList.add('dark');
+      }
+
+      // Load saved preferences if exists
+      const savedPrefs = localStorage.getItem('travelPreferences');
+      if (savedPrefs) {
+        try {
+          Object.assign(userPreferences, JSON.parse(savedPrefs));
+          updateResultsDisplay();
+        } catch (e) {
+          console.error('Error loading preferences:', e);
+        }
+      }
+
+      // Update progress bar
+      updateProgress();
+    }
+
+    // Edit Preferences
+    editPrefBtn.addEventListener('click', function() {
+      prefTest.style.display = 'block';
+      prefResults.style.display = 'none';
+      this.style.display = 'none';
+    });
+
+    // Option Selection
+    optionCards.forEach(card => {
+      card.addEventListener('click', function() {
+        // Remove selected class from siblings
+        this.parentNode.querySelectorAll('.option-card').forEach(c => {
+          c.classList.remove('selected');
+        });
+
+        // Add selected class to clicked card
+        this.classList.add('selected');
+      });
+    });
+
+    // Navigation
+    nextBtn.addEventListener('click', function() {
+      if (currentQuestion < totalQuestions) {
+        // Save answer
+        saveAnswer();
+
+        // Move to next question
+        document.querySelector(`.question-container[data-question="${currentQuestion}"]`).classList.remove('active');
+        currentQuestion++;
+        document.querySelector(`.question-container[data-question="${currentQuestion}"]`).classList.add('active');
+
+        // Update buttons and progress
+        updateNavigation();
+        updateProgress();
+      } else {
+        // Test completed
+        completeTest();
+      }
+    });
+
+    prevBtn.addEventListener('click', function() {
+      if (currentQuestion > 1) {
+        document.querySelector(`.question-container[data-question="${currentQuestion}"]`).classList.remove('active');
+        currentQuestion--;
+        document.querySelector(`.question-container[data-question="${currentQuestion}"]`).classList.add('active');
+
+        updateNavigation();
+        updateProgress();
+      }
+    });
+
+    // Helper Functions
+    function saveAnswer() {
+      const activeQuestion = document.querySelector(`.question-container[data-question="${currentQuestion}"]`);
+      const selectedOption = activeQuestion.querySelector('.option-card.selected');
+
+      if (selectedOption) {
+        const value = selectedOption.dataset.value;
+        const category = getCategoryForQuestion(currentQuestion);
+
+        if (category && !userPreferences[category].includes(value)) {
+          userPreferences[category].push(value);
+        }
+      }
+    }
+
+    function getCategoryForQuestion(questionNum) {
+      const categoryMap = {
+        1: 'food',
+        2: 'activities',
+        3: 'time',
+        4: 'budget',
+        5: 'accommodation',
+        6: 'transportation',
+        7: 'pace',
+        8: 'company',
+        9: 'climate',
+        10: 'photography',
+        11: 'shopping',
+        12: 'nightlife',
+        13: 'nature',
+        14: 'museums',
+        15: 'local_interaction',
+        16: 'language',
+        17: 'planning',
+        18: 'technology',
+        19: 'wellness',
+        20: 'priority'
+      };
+      return categoryMap[questionNum];
+    }
+
+    function updateNavigation() {
+      prevBtn.disabled = currentQuestion === 1;
+      if (currentQuestion === totalQuestions) {
+        nextBtn.innerHTML = 'Bitir <i class="fas fa-check"></i>';
+      } else {
+        nextBtn.innerHTML = 'Sonraki <i class="fas fa-arrow-right"></i>';
+      }
+    }
+
+    function updateProgress() {
+      const progress = (currentQuestion / totalQuestions) * 100;
+      progressBar.style.width = `${progress}%`;
+    }
+
+    function completeTest() {
+      // Save preferences to localStorage
+      localStorage.setItem('travelPreferences', JSON.stringify(userPreferences));
+
+      // Hide test and show results
+      prefTest.style.display = 'none';
+      prefResults.style.display = 'block';
+      editPrefBtn.style.display = 'inline-flex';
+
+      // Reset test state
+      currentQuestion = 1;
+      document.querySelector(`.question-container[data-question="1"]`).classList.add('active');
+      document.querySelector(`.question-container[data-question="${totalQuestions}"]`).classList.remove('active');
+      updateProgress();
+      updateNavigation();
+
+      // Update results display
+      updateResultsDisplay();
+
+      alert('Tercihleriniz başarıyla kaydedildi! Artık önerileriniz bu tercihlere göre şekillenecek.');
+    }
+
+    function updateResultsDisplay() {
+      const categories = {
+        food: { title: 'Yemek Tercihleri', icon: 'fa-utensils' },
+        activities: { title: 'Aktivite Tercihleri', icon: 'fa-archway' },
+        time: { title: 'Zaman Tercihleri', icon: 'fa-moon' },
+        budget: { title: 'Bütçe Tercihleri', icon: 'fa-wallet' },
+        transportation: { title: 'Ulaşım Tercihleri', icon: 'fa-bus' },
+        accommodation: { title: 'Konaklama Tercihleri', icon: 'fa-hotel' },
+        pace: { title: 'Seyahat Temposu', icon: 'fa-tachometer-alt' },
+        company: { title: 'Seyahat Arkadaşı', icon: 'fa-users' },
+        climate: { title: 'İklim Tercihleri', icon: 'fa-cloud-sun' },
+        photography: { title: 'Fotoğraf Çekme', icon: 'fa-camera' },
+        shopping: { title: 'Alışveriş Tercihleri', icon: 'fa-shopping-bag' },
+        nightlife: { title: 'Gece Hayatı', icon: 'fa-moon' },
+        nature: { title: 'Doğa Aktivitesi', icon: 'fa-tree' },
+        museums: { title: 'Müze İlgisi', icon: 'fa-landmark' },
+        local_interaction: { title: 'Yerel Etkileşim', icon: 'fa-handshake' },
+        language: { title: 'Dil Öğrenme', icon: 'fa-language' },
+        planning: { title: 'Planlama Stili', icon: 'fa-clipboard-list' },
+        technology: { title: 'Teknoloji Kullanımı', icon: 'fa-laptop' },
+        wellness: { title: 'Wellness Aktivitesi', icon: 'fa-spa' },
+        priority: { title: 'Öncelikler', icon: 'fa-star' }
+      };
+
+      let resultsHTML = '';
+
+      for (const [category, data] of Object.entries(categories)) {
+        if (userPreferences[category] && userPreferences[category].length > 0) {
+          resultsHTML += `
+            <div class="preference-category">
+              <h4 class="category-title">
+                <i class="fas ${data.icon}"></i>
+                ${data.title}
+              </h4>
+              <div class="preference-tags">
+                ${userPreferences[category].map(pref =>
+                  `<span class="tag">${formatPreferenceText(pref)}</span>`
+                ).join('')}
+              </div>
+            </div>
+          `;
+        }
+      }
+
+      prefResults.innerHTML = resultsHTML;
+    }
+
+    function formatPreferenceText(value) {
+      const textMap = {
+        'traditional': 'Geleneksel Lezzetler',
+        'modern': 'Modern Mutfaklar',
+        'street': 'Sokak Lezzetleri',
+        'fine': 'Lüks Restoranlar',
+        'historical': 'Tarihi Mekanlar',
+        'nature': 'Doğa Aktivitesi',
+        'shopping': 'Alışveriş Mekanları',
+        'morning': 'Sabah Etkinlikleri',
+        'day': 'Gün İçi Aktiviteler',
+        'evening': 'Akşamüstü',
+        'night': 'Gece Aktiviteleri',
+        'budget': 'Ekonomik Bütçe',
+        'moderate': 'Orta Bütçe',
+        'luxury': 'Lüks Bütçe',
+        'mixed': 'Karma Bütçe',
+        'hotel': 'Otel Konaklama',
+        'hostel': 'Hostel',
+        'apartment': 'Daire',
+        'unique': 'Benzersiz Konaklama',
+        'walking': 'Yürüyerek',
+        'public': 'Toplu Taşıma',
+        'taxi': 'Taksi/Uber',
+        'rental': 'Araç Kiralama',
+        'relaxed': 'Rahat Tempo',
+        'balanced': 'Dengeli Tempo',
+        'active': 'Aktif Tempo',
+        'adventure': 'Macera Tempo',
+        'solo': 'Yalnız Seyahat',
+        'couple': 'Çift Seyahat',
+        'friends': 'Arkadaşlarla',
+        'family': 'Aile Seyahat',
+        'warm': 'Sıcak İklim',
+        'mild': 'Ilıman İklim',
+        'cool': 'Serin İklim',
+        'cold': 'Soğuk İklim',
+        'photo_enthusiast': 'Fotoğraf Tutkunu',
+        'photo_some': 'Ara Sıra Fotoğraf',
+        'photo_minimal': 'Az Fotoğraf',
+        'photo_none': 'Fotoğraf Yok',
+        'shopping_heavy': 'Yoğun Alışveriş',
+        'shopping_some': 'Biraz Alışveriş',
+        'shopping_little': 'Az Alışveriş',
+        'shopping_none': 'Alışveriş Yok',
+        'nightlife_vibrant': 'Canlı Gece Hayatı',
+        'nightlife_cultural': 'Kültürel Gece',
+        'nightlight_relaxed': 'Sakin Gece',
+        'nightlife_none': 'Gece Hayatı Yok',
+        'nature_high': 'Yoğun Doğa',
+        'nature_medium': 'Orta Doğa',
+        'nature_low': 'Az Doğa',
+        'nature_none': 'Doğa Yok',
+        'museums_high': 'Müze Tutkunu',
+        'museums_selective': 'Seçici Müze',
+        'museums_occasional': 'Ara Sıra Müze',
+        'museums_none': 'Müze Yok',
+        'local_high': 'Yoğun Etkileşim',
+        'local_medium': 'Orta Etkileşim',
+        'local_low': 'Az Etkileşim',
+        'local_none': 'Etkileşim Yok',
+        'language_enthusiast': 'Dil Öğrenme',
+        'language_basic': 'Temel Dil',
+        'language_app': 'Uygulama ile',
+        'language_none': 'Dil Yok',
+        'planning_detailed': 'Detaylı Plan',
+        'planning_structured': 'Yapılandırılmış',
+        'planning_flexible': 'Esnek Plan',
+        'planning_spontaneous': 'Spontane',
+        'tech_heavy': 'Yoğun Teknoloji',
+        'tech_medium': 'Orta Teknoloji',
+        'tech_light': 'Hafif Teknoloji',
+        'tech_none': 'Teknoloji Yok',
+        'wellness_high': 'Yoğun Wellness',
+        'wellness_medium': 'Orta Wellness',
+        'wellness_low': 'Az Wellness',
+        'wellness_none': 'Wellness Yok',
+        'priority_culture': 'Kültür Öncelikli',
+        'priority_food': 'Yemek Öncelikli',
+        'priority_adventure': 'Macera Öncelikli',
+        'priority_relaxation': 'Rahatlık Öncelikli'
+      };
+
+      return textMap[value] || value;
+    }
+
+    // Run when DOM is loaded
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
