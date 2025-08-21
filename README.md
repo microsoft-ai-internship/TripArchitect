@@ -55,10 +55,22 @@ TripArchitect/
 │   ├── schemas.py
 │   └── venv/
 ├── frontend/
-│   ├── app.js
 │   ├── index.html
-│   ├── style.css
+│   ├── login.html
+│   ├── register.html
+│   ├── profile.html
+│   ├── css/
+│   │   ├── login.css          
+│   │   ├── auth.css          
+│   │   ├── profile.css       
+│   │   └── main.css          
+│   ├── js/
+│   │   ├── login.js          
+│   │   ├── auth.js           
+│   │   ├── profile.js         
+│   │   └── main.js                               
 │   └── venv/
+└── README.md                  
 ```
 
 ⚙️ Setup
