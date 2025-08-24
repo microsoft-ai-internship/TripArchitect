@@ -17,10 +17,13 @@ By simply entering a request such as “A 1-day, 5-stop tour in Beşiktaş,” t
 
 ## 🖼️ Sample Screenshots
 
-<img width="1512" height="945" alt="Screenshot 2025-08-13 15 53 47" src="https://github.com/user-attachments/assets/817625cd-aadc-4334-843c-037cd5976f80" />
-<img width="1512" height="864" alt="Screenshot 2025-08-13 16 19 39" src="https://github.com/user-attachments/assets/090bbcf9-ffe1-4100-b976-782d67bd7a67" />
-<img width="1512" height="864" alt="Screenshot 2025-08-13 16 19 46" src="https://github.com/user-attachments/assets/39ee5158-69d9-4dc2-9f26-599f3a3fe62d" />
-<img width="1512" height="864" alt="Screenshot 2025-08-13 16 19 48" src="https://github.com/user-attachments/assets/72ea4e53-f401-4323-b633-ae5877678fca" />
+
+<img width="1512" height="945" alt="Ekran Resmi 2025-08-21 17 55 18" src="https://github.com/user-attachments/assets/bea7283c-debb-407d-9c4f-6370c7c772c2" />
+<img width="1512" height="945" alt="Ekran Resmi 2025-08-21 17 53 09" src="https://github.com/user-attachments/assets/667ba319-2baf-4930-b9cf-ef89766d3f80" />
+<img width="1512" height="945" alt="Ekran Resmi 2025-08-21 17 53 18" src="https://github.com/user-attachments/assets/db2bff79-3bc0-4d6c-8ac1-1500ea120027" />
+<img width="1512" height="945" alt="Ekran Resmi 2025-08-21 17 54 14" src="https://github.com/user-attachments/assets/ecc19871-092e-4a80-ba53-e319fb43751d" />
+<img width="1512" height="945" alt="Ekran Resmi 2025-08-21 17 54 21" src="https://github.com/user-attachments/assets/28769596-eccb-4667-9239-58acc1d6a554" />
+<img width="1512" height="945" alt="Ekran Resmi 2025-08-21 17 54 25" src="https://github.com/user-attachments/assets/7984e893-3776-438c-b45d-74d6ceb7c05a" />
 
 
 ## 🛠️ Tech Stack
@@ -55,10 +58,22 @@ TripArchitect/
 │   ├── schemas.py
 │   └── venv/
 ├── frontend/
-│   ├── app.js
 │   ├── index.html
-│   ├── style.css
+│   ├── login.html
+│   ├── register.html
+│   ├── profile.html
+│   ├── css/
+│   │   ├── login.css          
+│   │   ├── auth.css          
+│   │   ├── profile.css       
+│   │   └── main.css          
+│   ├── js/
+│   │   ├── login.js          
+│   │   ├── auth.js           
+│   │   ├── profile.js         
+│   │   └── main.js                               
 │   └── venv/
+└── README.md                  
 ```
 
 ⚙️ Setup
